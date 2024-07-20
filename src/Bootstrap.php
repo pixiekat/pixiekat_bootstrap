@@ -4,6 +4,8 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
+use Symfony\Component\Routing;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
 use Symfony\Component\Cache\PruneableInterface;
 use Symfony\Component\Routing\Generator\UrlGenerator;
@@ -188,6 +190,13 @@ class Application {
   private $urlGenerator;
 
   /**
+   * The Routing\Matcher\UrlMatcher definition.
+   * 
+   * @var Routing\Matcher\UrlMatcher $urlMatcher
+   */
+  private $urlMatcher;
+
+  /**
    * The constructor.
    */
   public function __construct(Request $request, RequestContext $requestContext, Environment $twig, Mailer $mailer, EntityManager $entityManager, RouteCollection $routes) {
@@ -280,6 +289,22 @@ class Application {
       $this->urlGenerator = new UrlGenerator($this->getRoutes(), $this->getRequestContext());
     }
     return $this->urlGenerator;
+  }
+
+  /**
+   * Gets the Url Matchere.
+   */
+  public function getUrlMatcher(): Routing\Matcher\UrlMatcher {
+    if (!$this->getRoutes()) {
+      throw new \Exception('Routes not set.');
+    }
+    if (!$this->getRequestContext()) {
+      throw new \Exception('Request context not set.');
+    }
+    if (!$this->urlMatcher) {
+      $this->urlMatcher = new Routing\Matcher\UrlMatcher($this->getRoutes(), $this->getRequestContext());
+    }
+    return $this->urlMatcher;
   }
 
   /**
