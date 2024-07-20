@@ -114,12 +114,13 @@ class Bootstrap {
    * Loads up Twig.
    */
   private function loadTwig() {
+    $rootPath = self::getRootPath();
     $env = $_ENV['APP_ENV'] ?? 'dev';
     $cache_path = $_ENV['CACHE_PATH'] ?? '/var/cache/';
     $twig_path = $_ENV['TWIG_TEMPLATE_PATH'] ?? '/templates';
     $twig_cache = "{$cache_path}{$env}/twig";
 
-    $loader = new FilesystemLoader(ROOT_PATH . $twig_path);
+    $loader = new FilesystemLoader($rootPath . $twig_path);
     $twig = new Environment($loader, [
       'debug' => ($_ENV['APP_DEBUG'] ?? false),
       'cache' => $rootPath . $twig_cache,
