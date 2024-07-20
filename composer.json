@@ -1,0 +1,35 @@
+{
+    "name": "pixiekat/pixiekat_bootstrap",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "PixiekatBootstrap\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Katie Elizabeth",
+            "email": "coolerthanyrmom@supportcrime.net"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": "^8.3",
+        "doctrine/dbal": "^4",
+        "doctrine/migrations": "^3.8",
+        "doctrine/orm": "^3.2",
+        "symfony/cache": "^7.1",
+        "symfony/dotenv": "^7.1",
+        "symfony/http-foundation": "^7.1",
+        "symfony/mailer": "^7.1",
+        "symfony/routing": "^7.1",
+        "symfony/twig-bridge": "^7.1",
+        "symfony/yaml": "^7.1",
+        "twig/twig": "^3.10"
+    },
+    "require-dev": {
+        "symfony/google-mailer": "^7.1"
+    }
+}
