@@ -262,7 +262,7 @@ class Application {
   /**
    * Gets the current Twig object.
    */
-  public function getTwig(): Twig\Environment {
+  public function getTwig(): Environment {
     return $this->twig;
   }
 
