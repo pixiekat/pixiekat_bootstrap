@@ -19,18 +19,6 @@ use Twig\Loader\FilesystemLoader;
 
 class Bootstrap {
 
-  /**
-   * The root path definition.
-   * @var string
-   */
-  const ROOT_PATH = __DIR__.'/../';
-
-  /**
-   * The composer path definition.
-   * @var string
-   */
-  const COMPOSER_PATH = self::ROOT_PATH . '/vendor/';
-
   public static function getRootPath(): string {
     $reflection = new \ReflectionClass(\Composer\Autoload\ClassLoader::class);
     $rootDir = dirname(dirname(dirname($reflection->getFileName())));
@@ -81,10 +69,11 @@ class Bootstrap {
    * Loads up the DotEnv files.
    */
   protected function loadDotEnv() {
+    $rootPath = self::getRootPath();
     $dotenv = new Dotenv();
     foreach (['.env', '.env.local', '.env.local.php'] as $file) {
-      if (file_exists(ROOT_PATH.'/'.$file)) {
-        $dotenv->load(ROOT_PATH.'/'.$file);
+      if (file_exists($rootPath.'/'.$file)) {
+        $dotenv->load($rootPath.'/'.$file);
       }
     }
     if (!empty($_ENV['APP_ENV'])) {
@@ -101,8 +90,8 @@ class Bootstrap {
       }
 
       foreach ([".env.{$env}", ".env.{$env}.local", ".env.{$env}.local.php"] as $file) {
-        if (file_exists(ROOT_PATH.'/'.$file)) {
-          $dotenv->load(ROOT_PATH.'/'.$file);
+        if (file_exists($rootPath.'/'.$file)) {
+          $dotenv->load($rootPath.'/'.$file);
         }
       }
     }
@@ -133,7 +122,7 @@ class Bootstrap {
     $loader = new FilesystemLoader(ROOT_PATH . $twig_path);
     $twig = new Environment($loader, [
       'debug' => ($_ENV['APP_DEBUG'] ?? false),
-      'cache' => ROOT_PATH . $twig_cache,
+      'cache' => $rootPath . $twig_cache,
     ]);
     return $twig;
   }
@@ -223,7 +212,7 @@ class Application {
     $cache_lifespan = $_ENV['CACHE_DEFAULT_LIFESPAN'] ?? 3600;
     $cache_directory = "{$cache_path}/{$env}" ?? '/var/cache';
     $this->cache = [
-      'app' => new FilesystemTagAwareAdapter('app', $cache_lifespan, Bootstrap::ROOT_PATH . $cache_directory),
+      'app' => new FilesystemTagAwareAdapter('app', $cache_lifespan, Bootstrap::getRootPath() . $cache_directory),
     ];
   }
 
