@@ -20,6 +20,7 @@
         "doctrine/dbal": "^4",
         "doctrine/migrations": "^3.8",
         "doctrine/orm": "^3.2",
+        "monolog/monolog": "^3.7",
         "symfony/cache": "^7.1",
         "symfony/dotenv": "^7.1",
         "symfony/http-foundation": "^7.1",

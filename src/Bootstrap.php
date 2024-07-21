@@ -4,6 +4,9 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use Symfony\Component\Routing;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
@@ -45,6 +48,7 @@ class Bootstrap {
     $twig = $this->loadTwig();
     $mailer = $this->loadMailer();
     $entityManager = $this->loadDoctrine();
+    $logger = $this->loadMonolog();
 
     return new Application($request, $context, $twig, $mailer, $entityManager, $routes);
   }
@@ -110,6 +114,19 @@ class Bootstrap {
       $mailer = new Mailer($transport);
       return $mailer;
     }
+  }
+
+  /**
+   * Loads up the Monolog logger.
+   */
+  private function loadMonolog() {
+    $rootPath = self::getRootPath();
+    $app_env = $_ENV['APP_ENV'] ?? 'dev';
+    $log_path = $_ENV['LOG_PATH'] ?? '/var/log/';
+    $log_level = $_ENV['LOG_LEVEL'] ?? 'debug';
+    $logger = new Logger("app_{$app_env}");
+    $logger->pushHandler(new StreamHandler("{$rootPath}{$log_path}{$app_env}/app_{$app_env}.log", Level::toMonologLevel($log_level)));
+    return $logger;
   }
 
   /**
