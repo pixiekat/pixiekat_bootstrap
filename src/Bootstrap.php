@@ -227,8 +227,8 @@ class Application {
       'request' => $this->request,
     ]);
     $urlGenerator = $this->getUrlGenerator();
-    $twig->addFunction(new TwigFunction('path', function($url) use ($urlGenerator) {
-      return $urlGenerator->generate($url);
+    $twig->addFunction(new TwigFunction('path', function($url, $params = []) use ($urlGenerator) {
+      return $urlGenerator->generate($url, $params);
     }));
     $this->twig = $twig;
     $this->mailer = $mailer;
