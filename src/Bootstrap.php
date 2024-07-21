@@ -50,7 +50,7 @@ class Bootstrap {
     $entityManager = $this->loadDoctrine();
     $logger = $this->loadMonolog();
 
-    return new Application($request, $context, $twig, $mailer, $entityManager, $routes);
+    return new Application($request, $context, $logger, $twig, $mailer, $entityManager, $routes);
   }
 
   /**
@@ -124,8 +124,11 @@ class Bootstrap {
     $app_env = $_ENV['APP_ENV'] ?? 'dev';
     $log_path = $_ENV['LOG_PATH'] ?? '/var/log/';
     $log_level = $_ENV['LOG_LEVEL'] ?? 'debug';
-    $logger = new Logger("app_{$app_env}");
-    $logger->pushHandler(new StreamHandler("{$rootPath}{$log_path}{$app_env}/app_{$app_env}.log", Level::toMonologLevel($log_level)));
+    $logger = new Logger("app");
+    $logger->pushHandler(new StreamHandler("{$rootPath}{$log_path}{$app_env}/app.log", Level::Warning));
+    if ($app_env === 'dev') {
+      $logger->pushHandler(new StreamHandler("{$rootPath}{$log_path}{$app_env}/debug.log", Level::Debug));
+    }
     return $logger;
   }
 
@@ -179,6 +182,13 @@ class Application {
   private $request;
 
   /**
+   * The Monolog\Logger definition.
+   * 
+   * @var Monolog\Logger $logger
+   */
+  private $logger;
+
+  /**
    * The Twig\Environment definition.
    * 
    * @var Twig\Environment $twig
@@ -216,7 +226,7 @@ class Application {
   /**
    * The constructor.
    */
-  public function __construct(Request $request, RequestContext $requestContext, Environment $twig, Mailer $mailer, EntityManager $entityManager, RouteCollection $routes) {
+  public function __construct(Request $request, RequestContext $requestContext, Logger $logger, Environment $twig, Mailer $mailer, EntityManager $entityManager, RouteCollection $routes) {
     $this->request = $request;
     $this->requestContext = $requestContext;
     $this->setRoutes($routes);
@@ -230,6 +240,7 @@ class Application {
     $twig->addFunction(new TwigFunction('path', function($url, $params = []) use ($urlGenerator) {
       return $urlGenerator->generate($url, $params);
     }));
+    $this->logger = $logger;
     $this->twig = $twig;
     $this->mailer = $mailer;
     $this->entityManager = $entityManager;
@@ -262,6 +273,13 @@ class Application {
    */
   public function getEntityManager(): EntityManager {
     return $this->entityManager;
+  }
+
+  /**
+   * Gets the Monolog\Logger object.
+   */
+  public function getLogger(): Logger {
+    return $this->logger;
   }
 
   /**
